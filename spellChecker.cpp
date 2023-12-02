@@ -191,6 +191,8 @@ int main() {
         vector<pair<string, int>> suggestedCorrections;
         generateCorrections(inputWord, dictionary, suggestedCorrections, maxDistance);
 
+        quickSort(suggestedCorrections, 0, suggestedCorrections.size() - 1);
+
         if (!suggestedCorrections.empty()) {
             cout << "Possible corrections:\n";
             for (auto correction : suggestedCorrections) {
