@@ -208,6 +208,27 @@ vector<string> readDictionaryFromFile(const string& filename) {
     return words;
 }
 
+void remove_accent(string& word) {
+    if (word[word.length() - 1] == ',' || word[word.length() - 1] == '.') {
+        word.resize(word.length() - 1);
+    }
+}
+
+void readTextFile(string filename, vector<string>& words, string& full_text) {
+    ifstream file(filename);
+    full_text = "";
+    if (!file.is_open()) {
+        cerr << "Error opening file: " << filename << endl;
+        return; // Return empty vector if file couldn't be opened
+    }
+    string actual_word;
+    while (getline(file, actual_word, ' ')) {
+        full_text = full_text + (full_text != "" ? " " : "") + actual_word;
+        remove_accent(actual_word);
+        words.push_back(actual_word);
+    }
+    file.close();
+}
 int main() {
     Trie* dictionary = new Trie();
 
