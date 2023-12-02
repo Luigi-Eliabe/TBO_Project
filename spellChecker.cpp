@@ -132,7 +132,7 @@ void dfs(TrieNode* node, const string& currentWord, const string& targetWord, in
 }
 
 
-void generateCorrections(const string& word, Trie* dictionary, vector<pair<string,int>>& suggestions, int maxDistance) {
+void generateCorrections(const string& word, Trie* dictionary, vector<pair<string, int>>& suggestions, int maxDistance) {
     dfs(dictionary->root, "", word, 0, 0, maxDistance, suggestions);
 }
 
@@ -178,13 +178,17 @@ int main() {
     cout << "Enter a word: ";
     cin >> inputWord;
 
+    transform(inputWord.begin(), inputWord.end(), inputWord.begin(), [](char c) {
+        return std::tolower(c);
+        });
+
     int maxDistance = 2; // Maximum edit distance for suggestions
 
     if (dictionary->search(inputWord)) {
         cout << "The word is valid.\n";
     }
     else {
-        vector<pair<string,int>> suggestedCorrections;
+        vector<pair<string, int>> suggestedCorrections;
         generateCorrections(inputWord, dictionary, suggestedCorrections, maxDistance);
 
         if (!suggestedCorrections.empty()) {
