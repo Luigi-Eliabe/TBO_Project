@@ -86,7 +86,11 @@ void dfs(TrieNode* node, const string& currentWord, const string& targetWord, in
     // if (index == targetWord.length()) {
     if (distance > maxDistance)
         return;
+    int editDistance = levenshteinDistance(currentWord, targetWord);
+    if (node->isEndOfWord && distance <= maxDistance && editDistance < 4) {
+        suggestions.push_back(make_pair(currentWord, editDistance));
     }
+    // }
 
     char currentChar = targetWord[index];
     for (const auto& child : node->children) {
