@@ -1,13 +1,9 @@
-#include <iostream>
-#include <string>
-#include <map>
-#include <vector>
-#include <queue>
-#include <fstream>
+#include <bits/stdc++.h>
 
+using namespace std;
 class TrieNode {
 public:
-    std::map<char, TrieNode*> children;
+    map<char, TrieNode*> children;
     bool isEndOfWord;
 
     TrieNode() {
@@ -23,7 +19,7 @@ public:
         root = new TrieNode();
     }
 
-    void insert(const std::string& word) {
+    void insert(const string& word) {
         TrieNode* current = root;
 
         for (char c : word) {
@@ -36,7 +32,7 @@ public:
         current->isEndOfWord = true;
     }
 
-    bool search(const std::string& word) {
+    bool search(const string& word) {
         TrieNode* current = root;
 
         for (char c : word) {
@@ -55,6 +51,9 @@ void dfs(TrieNode* node, const std::string& currentWord, const std::string& targ
         if (node->isEndOfWord && distance <= maxDistance) {
             suggestions.push_back(currentWord);
         }
+void dfs(TrieNode* node, const string& currentWord, const string& targetWord, int index, int distance, int maxDistance, vector<string>& suggestions) {
+    // if (index == targetWord.length()) {
+    if (distance > maxDistance)
         return;
     }
 
@@ -71,20 +70,21 @@ void dfs(TrieNode* node, const std::string& currentWord, const std::string& targ
     }
 }
 
-void generateCorrections(const std::string& word, Trie* dictionary, std::vector<std::string>& suggestions, int maxDistance) {
+
+void generateCorrections(const string& word, Trie* dictionary, vector<string>& suggestions, int maxDistance) {
     dfs(dictionary->root, "", word, 0, 0, maxDistance, suggestions);
 }
 
-std::vector<std::string> readDictionaryFromFile(const std::string& filename) {
-    std::vector<std::string> words;
+vector<string> readDictionaryFromFile(const string& filename) {
+    vector<string> words;
 
-    std::ifstream file(filename);
+    ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filename << std::endl;
+        cerr << "Error opening file: " << filename << endl;
         return words; // Return empty vector if file couldn't be opened
     }
 
-    std::string word;
+    string word;
     while (file >> word) {
         words.push_back(word);
     }
@@ -97,40 +97,43 @@ int main() {
     Trie* dictionary = new Trie();
 
     // Mock dictionary
-    // std::vector<std::string> mockDictionary = {"apple", "banana", "banena", "banina", "banine", "orange", "grape", "peach", "pear"};
-    std::string dictionaryFile = "pt_BR.dic"; // Replace with your ".dic" file path
+    // vector<string> mockDictionary = {"apple", "banana", "banena", "banina", "banine", "orange", "grape", "peach", "pear"};
+    string dictionaryFile = "pt_BR.dic"; // Replace with your ".dic" file path
 
-    std::vector<std::string> mockDictionary = readDictionaryFromFile(dictionaryFile);
+    vector<string> mockDictionary = readDictionaryFromFile(dictionaryFile);
 
     if (!mockDictionary.empty()) {
-        std::cout << "Dictionary loaded successfully. Words read: " << mockDictionary.size() << std::endl;
+        cout << "Dictionary loaded successfully. Words read: " << mockDictionary.size() << endl;
         // You can use 'dictionary' vector containing words read from the file here
-    } else {
-        std::cout << "Empty dictionary or error reading the file." << std::endl;
     }
-    for (const std::string& word : mockDictionary) {
+    else {
+        cout << "Empty dictionary or error reading the file." << endl;
+    }
+    for (const string& word : mockDictionary) {
         dictionary->insert(word);
     }
 
-    std::string inputWord;
-    std::cout << "Enter a word: ";
-    std::cin >> inputWord;
+    string inputWord;
+    cout << "Enter a word: ";
+    cin >> inputWord;
 
     int maxDistance = 2; // Maximum edit distance for suggestions
 
     if (dictionary->search(inputWord)) {
-        std::cout << "The word is valid.\n";
-    } else {
-        std::vector<std::string> suggestedCorrections;
+        cout << "The word is valid.\n";
+    }
+    else {
+        vector<string> suggestedCorrections;
         generateCorrections(inputWord, dictionary, suggestedCorrections, maxDistance);
 
         if (!suggestedCorrections.empty()) {
-            std::cout << "Possible corrections:\n";
-            for (const std::string& correction : suggestedCorrections) {
-                std::cout << correction << "\n";
+            cout << "Possible corrections:\n";
+            for (const string& correction : suggestedCorrections) {
+                cout << correction << "\n";
             }
-        } else {
-            std::cout << "No suggestions found.\n";
+        }
+        else {
+            cout << "No suggestions found.\n";
         }
     }
 
