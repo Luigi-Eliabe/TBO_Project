@@ -1,6 +1,32 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+
+int partition(vector<pair<string, int>>& x, int start, int end) {
+    int pivot = x[end].second;
+    int i = start - 1;
+
+    for (int j = start; j < end; j++) {
+        if (x[j].second < pivot) {
+            i += 1;
+            swap(x[i], x[j]);
+        }
+    }
+    if (pivot < x[i + 1].second) {
+        swap(x[i + 1], x[end]);
+    }
+
+    return i + 1;
+}
+
+void quickSort(vector<pair<string, int>>& x, int left, int right) {
+    if (left < right) {
+        int p = partition(x, left, right);
+        quickSort(x, left, p - 1);
+        quickSort(x, p + 1, right);
+    }
+}
+
 class TrieNode {
 public:
     map<char, TrieNode*> children;
