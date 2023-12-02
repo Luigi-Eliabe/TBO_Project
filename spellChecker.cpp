@@ -46,10 +46,6 @@ public:
     }
 };
 
-void dfs(TrieNode* node, const std::string& currentWord, const std::string& targetWord, int index, int distance, int maxDistance, std::vector<std::string>& suggestions) {
-    if (index == targetWord.length()) {
-        if (node->isEndOfWord && distance <= maxDistance) {
-            suggestions.push_back(currentWord);
 int levenshteinDistance(const string& s1, const string& s2) {
     int m = s1.length();
     int n = s2.length();
@@ -86,7 +82,7 @@ int levenshteinDistance(const string& s1, const string& s2) {
     return dp[m][n];
 }
 
-void dfs(TrieNode* node, const string& currentWord, const string& targetWord, int index, int distance, int maxDistance, vector<string>& suggestions) {
+void dfs(TrieNode* node, const string& currentWord, const string& targetWord, int index, int distance, int maxDistance, vector<pair<string, int>>& suggestions) {
     // if (index == targetWord.length()) {
     if (distance > maxDistance)
         return;
@@ -106,7 +102,7 @@ void dfs(TrieNode* node, const string& currentWord, const string& targetWord, in
 }
 
 
-void generateCorrections(const string& word, Trie* dictionary, vector<string>& suggestions, int maxDistance) {
+void generateCorrections(const string& word, Trie* dictionary, vector<pair<string,int>>& suggestions, int maxDistance) {
     dfs(dictionary->root, "", word, 0, 0, maxDistance, suggestions);
 }
 
@@ -158,13 +154,13 @@ int main() {
         cout << "The word is valid.\n";
     }
     else {
-        vector<string> suggestedCorrections;
+        vector<pair<string,int>> suggestedCorrections;
         generateCorrections(inputWord, dictionary, suggestedCorrections, maxDistance);
 
         if (!suggestedCorrections.empty()) {
             cout << "Possible corrections:\n";
-            for (const string& correction : suggestedCorrections) {
-                cout << correction << "\n";
+            for (auto correction : suggestedCorrections) {
+                cout << correction.first << " " << correction.second << "\n";
             }
         }
         else {
