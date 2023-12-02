@@ -81,6 +81,43 @@ void quickSort(vector<pair<string, int>>& x, int left, int right) {
     }
 }
 
+//red = "\033[1;31m"
+//blue = "\033[1;34m"
+//green = "\033[1;32m"
+string highlight_words(string& text, string& word, string color_code) {
+    string colored_text = text;
+    string reset_color = "\033[0m";
+    string red_color = color_code;
+    vector<int> occurrences;
+    KMP(text, word, occurrences);
+    int offset = 0;
+    for (auto x : occurrences) {
+        colored_text.insert(x + offset, red_color);
+        offset += red_color.length();
+        colored_text.insert(x + word.length() + offset, reset_color);
+        offset += reset_color.length();
+    }
+    return colored_text;
+}
+
+//overload para caso já tenha as occorencias
+//red = "\033[1;31m"
+//blue = "\033[1;34m"
+//green = "\033[1;32m"
+string highlight_words(string& text, string& word, string color_code, vector<int>& occurrences) {
+    string colored_text = text;
+    string reset_color = "\033[0m";
+    string red_color = color_code;
+    int offset = 0;
+    for (auto x : occurrences) {
+        colored_text.insert(x + offset, red_color);
+        offset += red_color.length();
+        colored_text.insert(x + word.length() + offset, reset_color);
+        offset += reset_color.length();
+    }
+    return colored_text;
+}
+
 class TrieNode {
 public:
     map<char, TrieNode*> children;
