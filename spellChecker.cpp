@@ -2,6 +2,60 @@
 
 using namespace std;
 
+vector<int> compute_failure_function(const string& pattern) {
+    int m = pattern.length();
+    vector<int> lps(m, 0);
+    int j = 0;
+
+    for (int i = 1; i < m; ) {
+        if (pattern[i] == pattern[j]) {
+            lps[i] = j + 1;
+            ++j;
+            ++i;
+        }
+        else {
+            if (j != 0) {
+                j = lps[j - 1];
+            }
+            else {
+                lps[i] = 0;
+                ++i;
+            }
+        }
+    }
+
+    return lps;
+}
+
+void KMP(const string& text, const string& pattern, vector<int>& matches) {
+    int textLength = text.length();
+    int patternLength = pattern.length();
+    vector<int> failure_function = compute_failure_function(pattern);
+
+    int i = 0; // Index for text[]
+    int j = 0; // Index for pattern[]
+
+    while (i < textLength) {
+        if (pattern[j] == text[i]) {
+            j++;
+            i++;
+        }
+        if (j == patternLength) {
+            matches.push_back(i - j);
+            cout << i - j << endl;
+            j = failure_function[j - 1];  // Update j to continue searching for the next occurrence
+        }
+        else if (i < textLength && pattern[j] != text[i]) {
+            if (j != 0) {
+                j = failure_function[j - 1];
+            }
+            else {
+                i++;
+            }
+        }
+    }
+}
+
 int partition(vector<pair<string, int>>& x, int start, int end) {
     int pivot = x[end].second;
     int i = start - 1;
