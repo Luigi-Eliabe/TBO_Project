@@ -229,6 +229,25 @@ void readTextFile(string filename, vector<string>& words, string& full_text) {
     }
     file.close();
 }
+
+
+//Função que mostra palavras erradas no texto
+vector<int> showErros(vector<string>& text, Trie*& dictionary) {
+    vector<int> wrong_words;
+    for (int i = 0; i < text.size(); i++) {
+        transform(text[i].begin(), text[i].end(), text[i].begin(), [](char c) {
+            return std::tolower(c);
+            });
+        if (!dictionary->search(text[i]))
+            wrong_words.push_back(i);
+    }
+    return wrong_words;
+}
+
+// string random_corrections(string &text,vector<string> &wrong_words, vector<pair<string, int>>& suggestions){
+
+// }
+
 int main() {
     Trie* dictionary = new Trie();
 
