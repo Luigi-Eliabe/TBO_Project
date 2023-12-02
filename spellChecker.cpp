@@ -100,7 +100,7 @@ void dfs(TrieNode* node, const string& currentWord, const string& targetWord, in
         int newDistance = distance + (currentChar == childChar ? 0 : 1);
 
         if (newDistance <= maxDistance) {
-            dfs(nextNode, currentWord + childChar, targetWord, index + 1, newDistance, maxDistance, suggestions);
+            dfs(nextNode, currentWord + childChar, targetWord, (index == targetWord.length() - 1 ? 0 : index + 1), newDistance, maxDistance, suggestions);
         }
     }
 }
