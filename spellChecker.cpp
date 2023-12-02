@@ -50,7 +50,42 @@ void dfs(TrieNode* node, const std::string& currentWord, const std::string& targ
     if (index == targetWord.length()) {
         if (node->isEndOfWord && distance <= maxDistance) {
             suggestions.push_back(currentWord);
+int levenshteinDistance(const string& s1, const string& s2) {
+    int m = s1.length();
+    int n = s2.length();
+
+    // Create a matrix to store the distances
+    vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+
+    // Initialize the matrix
+    for (int i = 0; i <= m; ++i) {
+        for (int j = 0; j <= n; ++j) {
+            if (i == 0) {
+                dp[i][j] = j;
+            }
+            else if (j == 0) {
+                dp[i][j] = i;
+            }
+            else {
+                dp[i][j] = 0; // Placeholder for distance calculation
+            }
         }
+    }
+
+    // Fill the matrix
+    for (int i = 1; i <= m; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            int insertion = dp[i][j - 1] + 1;
+            int deletion = dp[i - 1][j] + 1;
+            int substitution = dp[i - 1][j - 1] + (s1[i - 1] == s2[j - 1] ? 0 : 1);
+            dp[i][j] = min(min(insertion, deletion), substitution);
+        }
+    }
+
+    // The bottom-right cell contains the Levenshtein distance
+    return dp[m][n];
+}
+
 void dfs(TrieNode* node, const string& currentWord, const string& targetWord, int index, int distance, int maxDistance, vector<string>& suggestions) {
     // if (index == targetWord.length()) {
     if (distance > maxDistance)
