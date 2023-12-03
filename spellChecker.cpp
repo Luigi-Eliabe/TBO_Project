@@ -308,8 +308,35 @@ void find_all_errors(vector<int> &wrong_words_in_array, string &text, vector<str
     find_all_errors(wrong_words_in_array,text,all_words_of_text,index + 1, occurrences);
 }
 
-// string random_corrections(string &text,vector<string> &wrong_words, vector<pair<string, int>>& suggestions){
-void show_suggetions(vector<set<pair<int, string>>>& suggestions,  set<int> &wrong_words_text, string &text, Trie *dictionary, int maxDistance){
+
+void auto_correct(vector<set<pair<int, string>>>& suggestions, vector<string> &text_arr, vector<int> &wrong_pos_arr, string &corrected_text){
+    int ct=0;
+    vector<string> words_not_found;
+    for(auto x: wrong_pos_arr){
+        if(!(suggestions[ct].empty())){
+            auto firstElement = *(suggestions[ct].begin());
+            text_arr[x] = isalpha(text_arr[x][text_arr[x].length() - 1]) ? (GREEN + firstElement.second + RESET) : text_arr[x].replace(0,text_arr[x].length()-1,(GREEN + firstElement.second + RESET));
+            // text.insert(x,firstElement.second);
+        }else{
+            words_not_found.push_back(text_arr[x]);
+            text_arr[x] = isalpha(text_arr[x][text_arr[x].length() - 1]) ? (RED + text_arr[x] + RESET) : text_arr[x].replace(0,text_arr[x].length()-1,(RED + text_arr[x] + RESET));
+        }
+        ct++;
+    }
+    for(auto x : text_arr){
+        corrected_text =  corrected_text + (corrected_text != "" ? " " : "") + x;
+    }
+    cout << endl << corrected_text << endl;
+    if(!words_not_found.empty()){
+        cout << "\nNo corrections found to: ";
+        for(auto x : words_not_found){
+            cout << "\"" << x << "\"" << " ";
+        }
+        cout << endl;
+    }
+}
+
+
 void show_suggetions(vector<set<pair<int, string>>>& suggestions, set<int> &wrong_words_text, string &text, Trie *dictionary, int maxDistance){
     string wrong_word;
     for(auto x: wrong_words_text){
