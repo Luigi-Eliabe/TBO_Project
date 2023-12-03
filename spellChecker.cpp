@@ -85,6 +85,18 @@ void quickSort(vector<pair<string, int>>& x, int left, int right) {
     }
 }
 
+
+
+int end_word(const string& text){
+    for (int i = 0; i < text.length(); ++i) {
+        if (ispunct(text[i]) || isspace(text[i])) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 //red = "\033[1;31m"
 //blue = "\033[1;34m"
 //green = "\033[1;32m"
