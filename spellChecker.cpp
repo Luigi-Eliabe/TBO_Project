@@ -32,7 +32,7 @@ vector<int> compute_failure_function(const string& pattern) {
     return lps;
 }
 
-void KMP(const string& text, const string& pattern, vector<int>& matches) {
+void KMP(const string& text, const string& pattern, set<int>& matches) {
     int textLength = text.length();
     int patternLength = pattern.length();
     vector<int> failure_function = compute_failure_function(pattern);
@@ -46,8 +46,7 @@ void KMP(const string& text, const string& pattern, vector<int>& matches) {
             i++;
         }
         if (j == patternLength) {
-            matches.push_back(i - j);
-            cout << i - j << endl;
+            matches.insert(i - j);
             j = failure_function[j - 1];  // Update j to continue searching for the next occurrence
         }
         else if (i < textLength && pattern[j] != text[i]) {
@@ -93,7 +92,7 @@ string highlight_words(string& text, string& word, string color_code) {
     string colored_text = text;
     string reset_color = RESET;
     string red_color = color_code;
-    vector<int> occurrences;
+    set<int> occurrences;
     KMP(text, word, occurrences);
     int offset = 0;
     for (auto x : occurrences) {
@@ -109,7 +108,7 @@ string highlight_words(string& text, string& word, string color_code) {
 //red = "\033[1;31m"
 //blue = "\033[1;34m"
 //green = "\033[1;32m"
-string highlight_words(string& text, string& word, string color_code, vector<int>& occurrences) {
+string highlight_wrong_words(string& text, string color_code, set<int>& occurrences) {
     string colored_text = text;
     string reset_color = RESET;
     string red_color = color_code;
