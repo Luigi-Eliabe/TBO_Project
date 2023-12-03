@@ -215,16 +215,18 @@ int levenshteinDistance(const string& s1, const string& s2) {
     return dp[m][n];
 }
 
-void dfs(TrieNode* node, const string& currentWord, const string& targetWord, int index, int distance, int maxDistance, vector<pair<string, int>>& suggestions) {
+void dfs(TrieNode* node, const string& currentWord, const string& targetWord, int index, int distance, int maxDistance, set<pair<int, string>>& suggestions) {
     // if (index == targetWord.length()) {
     if (distance > maxDistance)
         return;
     int editDistance = levenshteinDistance(currentWord, targetWord);
     if (node->isEndOfWord && distance <= maxDistance && editDistance < 4) {
-        suggestions.push_back(make_pair(currentWord, editDistance));
+        suggestions.insert(make_pair(editDistance, currentWord));
     }
     // }
 
+    if(targetWord[index] == targetWord[index+1] && index == 0)
+        index++;
     char currentChar = targetWord[index];
     for (const auto& child : node->children) {
         char childChar = child.first;
@@ -239,7 +241,7 @@ void dfs(TrieNode* node, const string& currentWord, const string& targetWord, in
 }
 
 
-void generateCorrections(const string& word, Trie* dictionary, vector<pair<string, int>>& suggestions, int maxDistance) {
+void generateCorrections(const string& word, Trie* dictionary, set<pair<int, string>>& suggestions, int maxDistance) {
     dfs(dictionary->root, "", word, 0, 0, maxDistance, suggestions);
 }
 
