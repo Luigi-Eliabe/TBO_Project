@@ -1,5 +1,10 @@
 #include <bits/stdc++.h>
 
+#define RED "\033[1;31m"
+#define BLUE "\033[1;34m"
+#define GREEN "\033[1;32m"
+#define RESET "\033[0m"
+
 using namespace std;
 
 vector<int> compute_failure_function(const string& pattern) {
@@ -86,7 +91,7 @@ void quickSort(vector<pair<string, int>>& x, int left, int right) {
 //green = "\033[1;32m"
 string highlight_words(string& text, string& word, string color_code) {
     string colored_text = text;
-    string reset_color = "\033[0m";
+    string reset_color = RESET;
     string red_color = color_code;
     vector<int> occurrences;
     KMP(text, word, occurrences);
@@ -106,7 +111,7 @@ string highlight_words(string& text, string& word, string color_code) {
 //green = "\033[1;32m"
 string highlight_words(string& text, string& word, string color_code, vector<int>& occurrences) {
     string colored_text = text;
-    string reset_color = "\033[0m";
+    string reset_color = RESET;
     string red_color = color_code;
     int offset = 0;
     for (auto x : occurrences) {
