@@ -306,6 +306,21 @@ void find_all_errors(vector<int> &wrong_words_in_array, string &text, vector<str
 }
 
 // string random_corrections(string &text,vector<string> &wrong_words, vector<pair<string, int>>& suggestions){
+void show_suggetions(vector<set<pair<int, string>>>& suggestions,  set<int> &wrong_words_text, string &text, Trie *dictionary, int maxDistance){
+    string wrong_word;
+    for(auto x: wrong_words_text){
+        wrong_word = text.substr(x,end_word(text.substr(x)));
+        suggestions.resize(suggestions.size() + 1);
+        generateCorrections(wrong_word, dictionary, suggestions[suggestions.size()-1], maxDistance);
+        cout << "Correções para " << wrong_word << endl;
+        for(auto y: suggestions[suggestions.size()-1]){
+            if(y.first <= 2)
+                cout << y.second << " " << y.first << endl;
+        }
+    }
+}
+
+// string random_corrections(string &text,vector<string> &wrong_words, set<pair<int, string>>& suggestions){
 
 // }
 
