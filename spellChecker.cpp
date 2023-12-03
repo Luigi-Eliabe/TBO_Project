@@ -269,7 +269,7 @@ void remove_accent(string& word) {
     }
 }
 
-void readTextFile(string filename, vector<string>& words, string& full_text) {
+void readTextFile(string filename, vector<string>& words, vector<string> &words_w_accent, string& full_text) {
     ifstream file(filename);
     full_text = "";
     if (!file.is_open()) {
@@ -279,6 +279,7 @@ void readTextFile(string filename, vector<string>& words, string& full_text) {
     string actual_word;
     while (getline(file, actual_word, ' ')) {
         full_text = full_text + (full_text != "" ? " " : "") + actual_word;
+        words_w_accent.push_back(actual_word);
         remove_accent(actual_word);
         words.push_back(actual_word);
     }
