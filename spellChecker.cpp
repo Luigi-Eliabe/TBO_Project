@@ -457,12 +457,17 @@ void suggestSaveFile(){
 
 int main() {
     Trie* dictionary = new Trie();
-
-    // Mock dictionary
-    // vector<string> mockDictionary = {"apple", "banana", "banena", "banina", "banine", "orange", "grape", "peach", "pear"};
-    string dictionaryFile = "pt_BR.dic"; // Replace with your ".dic" file path
-
+    string dictionaryFile = DICTIONARY_NAME; // Replace with your ".dic" file path
     vector<string> mockDictionary = readDictionaryFromFile(dictionaryFile);
+    vector<string> words_in_text;
+    vector<string> words_in_text_w_accent;
+    set<int> wrong_words_text;
+    vector<int> wrong_erros_pos_arr;
+    vector<set<pair<int, string>>> suggestedCorrections;
+    string file_text;
+    string palavra_certona, after_corrections = "";
+    string teste = "flores";
+    int maxDistance = 3; // Maximum edit distance for suggestions
 
     if (!mockDictionary.empty()) {
         cout << "Dictionary loaded successfully. Words read: " << mockDictionary.size() << endl;
@@ -475,35 +480,118 @@ int main() {
         dictionary->insert(word);
     }
 
-    string inputWord;
-    cout << "Enter a word: ";
-    cin >> inputWord;
+    string inputFile;
+    cout << "Enter a text file: ";
+    cin >> inputFile;
+    readTextFile(inputFile,words_in_text,words_in_text_w_accent,file_text);
 
-    transform(inputWord.begin(), inputWord.end(), inputWord.begin(), [](char c) {
-        return std::tolower(c);
-        });
-
-    int maxDistance = 2; // Maximum edit distance for suggestions
-
-    if (dictionary->search(inputWord)) {
-        cout << "The word is valid.\n";
-    }
-    else {
-        vector<pair<string, int>> suggestedCorrections;
-        generateCorrections(inputWord, dictionary, suggestedCorrections, maxDistance);
-
-        quickSort(suggestedCorrections, 0, suggestedCorrections.size() - 1);
-
-        if (!suggestedCorrections.empty()) {
-            cout << "Possible corrections:\n";
-            for (auto correction : suggestedCorrections) {
-                cout << correction.first << " " << correction.second << "\n";
-            }
+    system("clear");
+    for(int choice;;){
+        menu();
+        cin >> choice;
+        switch(choice){
+            case 1:
+                for(;;){
+                    string word_to_find;
+                    cout << file_text << endl;
+                    cout << "\n\nWhat word you trying to find? " << endl;
+                    cin >> word_to_find;
+                    string colored_find_text = highlight_words(file_text,word_to_find,BLUE);
+                    system("clear");
+                    cout << colored_find_text << endl;
+                    searchMenu();
+                    cin >> choice;
+                    if(choice == 1) continue;
+                    else break;
+                }
+            break;
+            case 2:
+                for(;;){
+                    wrong_erros_pos_arr =  showErros(words_in_text,dictionary);
+                    if(after_corrections != ""){
+                        suggestSaveFile();
+                        cin >> choice;
+                        if(choice == 1){
+                            if(!wrong_erros_pos_arr.empty()){
+                                cout << "\n\nYour text still have " << wrong_erros_pos_arr.size() << " error(s). Are you sure to continue?\n\n1-Yes.\n2-No.\n";
+                                cin >> choice;
+                            }
+                            if(choice == 1 || wrong_erros_pos_arr.empty()){
+                                cout << "\n\nInput the file name: ";
+                                string file_name;
+                                cin >> file_name;
+                                ofstream file(file_name);
+                                streambuf *original_cout = cout.rdbuf();
+                                cout.rdbuf(file.rdbuf());
+                                cout << after_corrections;
+                                cout.rdbuf(original_cout);
+                            }
+                        }
+                    }
+                    find_all_errors(wrong_erros_pos_arr, file_text, words_in_text,0,wrong_words_text);
+                    // system("clear");
+                    string colored_wrong_text = highlight_wrong_words(file_text,RED,wrong_words_text);
+                    cout << endl << colored_wrong_text << endl;
+                    cout << "\nyour text have: " << wrong_erros_pos_arr.size() << " misspelled words\n";
+                    suggestCorrectionsMenu();
+                    cin >> choice;
+                    if(choice == 0) break;
+                    if (choice == 1){
+                        show_suggetions(suggestedCorrections,wrong_words_text, (after_corrections == "" ? file_text : after_corrections) ,dictionary,maxDistance);
+                        auto_correct(suggestedCorrections,words_in_text_w_accent,wrong_erros_pos_arr,palavra_certona, after_corrections, dictionary);
+                        suggestedCorrections.clear();
+                        words_in_text_w_accent.clear();
+                        wrong_erros_pos_arr.clear();
+                        wrong_words_text.clear();
+                        words_in_text.clear();
+                        split_string(after_corrections,words_in_text,words_in_text_w_accent,' ');
+                        // cout << endl << after_corrections << endl;
+                        // cout << "\nTap anything to continue: \n" << endl;
+                    }
+                    file_text = after_corrections;
+                }
+            break;
+            case 0: return 0;
         }
-        else {
-            cout << "No suggestions found.\n";
-        }
+
     }
+
+    // transform(inputWord.begin(), inputWord.end(), inputWord.begin(), [](char c) {
+    //     return std::tolower(c);
+    //     });
+
+
+    wrong_erros_pos_arr = showErros(words_in_text,dictionary);
+    find_all_errors(wrong_erros_pos_arr,file_text,words_in_text,0,wrong_words_text);
+    string colored_wrong_text = highlight_wrong_words(file_text,RED,wrong_words_text);
+
+    cout << colored_wrong_text << endl;
+
+    cout << wrong_erros_pos_arr.size() << " misspelled words!\n";
+
+    show_suggetions(suggestedCorrections,wrong_words_text,file_text,dictionary,maxDistance);
+    // auto_correct(suggestedCorrections,words_in_text_2,wrong_erros_pos_arr,palavra_certona);
+    cout << highlight_words(file_text,teste,BLUE);
+
+    // if (dictionary->search(inputFile)) {
+    //     cout << "The word is valid.\n";
+    // }
+    // else {
+
+
+
+        // generateCorrections(inputWord, dictionary, suggestedCorrections, maxDistance);
+        // quickSort(suggestedCorrections, 0, suggestedCorrections.size() - 1)
+        // if (!suggestedCorrections.empty()) {
+        //     cout << "Possible corrections:\n";
+        //     for (auto correction : suggestedCorrections) {
+        //         cout << correction.first << " " << correction.second << "\n";
+        //     }
+        // }
+        // else {
+        //     cout << "No suggestions found.\n";
+        // }
+    // }
 
     return 0;
 }
