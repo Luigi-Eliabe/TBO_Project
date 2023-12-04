@@ -273,6 +273,18 @@ void remove_accent(string& word) {
     }
 }
 
+void split_string(const string& input, vector<string> &words_in_text, vector<string> &words_in_text_w_accent , char delimiter) {
+    istringstream iss(input);
+    string token;
+
+    while (getline(iss, token, delimiter)) {
+        words_in_text_w_accent.push_back(token);
+        remove_accent(token);
+        words_in_text.push_back(token);
+    }
+
+}
+
 void readTextFile(string filename, vector<string>& words, vector<string> &words_w_accent, string& full_text) {
     ifstream file(filename);
     full_text = "";
