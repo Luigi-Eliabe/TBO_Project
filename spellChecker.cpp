@@ -324,8 +324,23 @@ void find_all_errors(vector<int> &wrong_words_in_array, string &text, vector<str
     find_all_errors(wrong_words_in_array,text,all_words_of_text,index + 1, occurrences);
 }
 
+string removeColorCodes(const string& input) {
+    regex color_regex("\x1B\\[[0-9;]*m");
+    return regex_replace(input, color_regex, "");
+}
 
-void auto_correct(vector<set<pair<int, string>>>& suggestions, vector<string> &text_arr, vector<int> &wrong_pos_arr, string &corrected_text){
+void add_to_dictionary(string word, string dictionary){
+    ofstream dic_file(dictionary, ios::app);
+    if (!dic_file.is_open()) {
+        std::cerr << "Error opening file for reading.\n";
+        return ;
+    }
+    dic_file << word << endl;
+}
+
+void auto_correct(vector<set<pair<int, string>>>& suggestions, vector<string> &text_arr, vector<int> &wrong_pos_arr, string &corrected_text, string &white_corrected_text, Trie* dictionary){
+    corrected_text = "";
+    white_corrected_text = "";
     int ct=0;
     vector<string> words_not_found;
     for(auto x: wrong_pos_arr){
@@ -339,16 +354,26 @@ void auto_correct(vector<set<pair<int, string>>>& suggestions, vector<string> &t
         }
         ct++;
     }
+    string cor = GREEN;
     for(auto x : text_arr){
+        string plain_text = removeColorCodes(x);
+        white_corrected_text =  white_corrected_text + (white_corrected_text != "" ? " " : "") + plain_text;
         corrected_text =  corrected_text + (corrected_text != "" ? " " : "") + x;
     }
-    cout << endl << corrected_text << endl;
+    cout << "\n" << corrected_text << endl;
     if(!words_not_found.empty()){
         cout << "\nNo corrections found to: ";
         for(auto x : words_not_found){
-            cout << "\"" << x << "\"" << " ";
+            cout << "\"" << x << "\"" << "\n\n";
+            cout << "Do you wanna add this word to the dictionary?\n\n1-Yes.\n2-No.\n";
+            int choice;
+            cin >> choice;
+            if(choice==1){
+                dictionary->insert(x);
+                string dic_name = DICTIONARY_NAME;
+                add_to_dictionary(x,dic_name);
+            }
         }
-        cout << endl;
     }
 }
 
