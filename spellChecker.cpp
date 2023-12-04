@@ -317,7 +317,7 @@ vector<int> showErros(vector<string>& text, Trie*& dictionary) {
 }
 
 //returns all position of wrong words in the text
-void find_all_errors(vector<int> &wrong_words_in_array, string &text, vector<string> &all_words_of_text, int index, set<int> &occurrences){
+void find_all_errors(vector<int> &wrong_words_in_array, const string &text, vector<string> &all_words_of_text, int index, set<int> &occurrences){
     if(index >= wrong_words_in_array.size())
         return;
     KMP(text,all_words_of_text[wrong_words_in_array[index]], occurrences);
