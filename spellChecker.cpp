@@ -391,7 +391,28 @@ void show_suggetions(vector<set<pair<int, string>>>& suggestions, set<int> &wron
             if(y.first <= 3 && ct < 3)
                 cout << y.second << " " << y.first << endl;
             ct++;
+void manual_corrections(vector<string> &text_arr, vector<int> &wrong_pos_arr, string &corrected_text, string &white_corrected_text, Trie* dictionary){
+    corrected_text = "";
+    white_corrected_text = "";
+    string correction;
+    for(auto x : wrong_pos_arr){
+        cout << "\nInput the correction to " << RED << (isalpha(text_arr[x][text_arr[x].length() - 1]) ? text_arr[x] : text_arr[x].substr(0,text_arr[x].size()-1)  ) << RESET <<  ": ";
+        cin >> correction;
+        text_arr[x] = isalpha(text_arr[x][text_arr[x].length() - 1]) ? (GREEN + correction + RESET) : text_arr[x].replace(0,text_arr[x].length()-1,(GREEN + correction + RESET));
+        if(!dictionary->search(correction)){
+            cout << "Word " << BLUE << correction << RESET << " not found in the dictionary, do you want do add it?\n\n1 - Yes.\n2 - No.\n";
+            int choice;
+            cin >> choice;
+            if(choice == 1){
+                add_to_dictionary(correction,DICTIONARY_NAME);
+                dictionary->insert(correction);
+            }
         }
+    }
+    for(auto x : text_arr){
+        string plain_text = removeColorCodes(x);
+        white_corrected_text =  white_corrected_text + (white_corrected_text != "" ? " " : "") + plain_text;
+        corrected_text =  corrected_text + (corrected_text != "" ? " " : "") + x;
     }
 }
 
@@ -547,6 +568,15 @@ int main() {
                         split_string(after_corrections,words_in_text,words_in_text_w_accent,' ');
                         // cout << endl << after_corrections << endl;
                         // cout << "\nTap anything to continue: \n" << endl;
+                    }else if(choice == 2){
+                        show_suggetions(suggestedCorrections,wrong_words_text, (after_corrections == "" ? file_text : after_corrections) ,dictionary,maxDistance);
+                        manual_corrections(words_in_text_w_accent,wrong_erros_pos_arr,palavra_certona, after_corrections, dictionary);
+                        suggestedCorrections.clear();
+                        words_in_text_w_accent.clear();
+                        wrong_erros_pos_arr.clear();
+                        wrong_words_text.clear();
+                        words_in_text.clear();
+                        split_string(after_corrections,words_in_text,words_in_text_w_accent,' ');
                     }
                     file_text = after_corrections;
                 }
