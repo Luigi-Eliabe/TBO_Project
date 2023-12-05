@@ -1,0 +1,7 @@
+#Ide configs
+.vscode
+
+#test files
+1.in
+a.out
+teste.cc
