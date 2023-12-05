@@ -8,6 +8,53 @@
 
 using namespace std;
 
+struct TrieNode {
+    map<char, TrieNode*> children;
+    bool isEndOfWord;
+
+    TrieNode() : isEndOfWord(false) {}
+};
+
+struct Trie {
+    TrieNode* root;
+
+    Trie() : root(new TrieNode()) {}
+
+    void insert(TrieNode* node, const string& word) {
+        TrieNode* current = node;
+
+        for (char c : word) {
+            if (current->children.find(c) == current->children.end()) {
+                current->children[c] = new TrieNode();
+            }
+            current = current->children[c];
+        }
+
+        current->isEndOfWord = true;
+    }
+
+    void insert(const string& word) {
+        insert(root, word);
+    }
+
+    bool search(TrieNode* node, const string& word) {
+        TrieNode* current = node;
+
+        for (char c : word) {
+            if (current->children.find(c) == current->children.end()) {
+                return false;
+            }
+            current = current->children[c];
+        }
+
+        return current != nullptr && current->isEndOfWord;
+    }
+
+    bool search(const string& word) {
+        return search(root, word);
+    }
+};
+
 vector<int> compute_failure_function(const string& pattern) {
     int m = pattern.length();
     vector<int> lps(m, 0);
@@ -38,8 +85,8 @@ void KMP(const string& text, const string& pattern, set<int>& matches) {
     int patternLength = pattern.length();
     vector<int> failure_function = compute_failure_function(pattern);
 
-    int i = 0; // Index for text[]
-    int j = 0; // Index for pattern[]
+    int i = 0;
+    int j = 0;
 
     while (i < textLength) {
         if (pattern[j] == text[i]) {
@@ -48,7 +95,7 @@ void KMP(const string& text, const string& pattern, set<int>& matches) {
         }
         if (j == patternLength) {
             matches.insert(i - j);
-            j = failure_function[j - 1];  // Update j to continue searching for the next occurrence
+            j = failure_function[j - 1];
         }
         else if (i < textLength && pattern[j] != text[i]) {
             if (j != 0) {
@@ -61,33 +108,6 @@ void KMP(const string& text, const string& pattern, set<int>& matches) {
     }
 }
 
-int partition(vector<pair<string, int>>& x, int start, int end) {
-    int pivot = x[end].second;
-    int i = start - 1;
-
-    for (int j = start; j < end; j++) {
-        if (x[j].second < pivot) {
-            i += 1;
-            swap(x[i], x[j]);
-        }
-    }
-    if (pivot < x[i + 1].second) {
-        swap(x[i + 1], x[end]);
-    }
-
-    return i + 1;
-}
-
-void quickSort(vector<pair<string, int>>& x, int left, int right) {
-    if (left < right) {
-        int p = partition(x, left, right);
-        quickSort(x, left, p - 1);
-        quickSort(x, p + 1, right);
-    }
-}
-
-
-
 int end_word(const string& text){
     for (int i = 0; i < text.length(); ++i) {
         if (ispunct(text[i]) || isspace(text[i])) {
@@ -98,9 +118,6 @@ int end_word(const string& text){
     return -1;
 }
 
-//red = "\033[1;31m"
-//blue = "\033[1;34m"
-//green = "\033[1;32m"
 string highlight_words(string& text, string& word, string color_code) {
     string colored_text = text;
     string reset_color = RESET;
@@ -119,10 +136,6 @@ string highlight_words(string& text, string& word, string color_code) {
     return colored_text;
 }
 
-//overload para caso já tenha as occorencias
-//red = "\033[1;31m"
-//blue = "\033[1;34m"
-//green = "\033[1;32m"
 string highlight_wrong_words(const string& text, string color_code, set<int>& occurrences) {
     string colored_text = text;
     string reset_color = RESET;
@@ -139,59 +152,14 @@ string highlight_wrong_words(const string& text, string color_code, set<int>& oc
     return colored_text;
 }
 
-class TrieNode {
-public:
-    map<char, TrieNode*> children;
-    bool isEndOfWord;
-
-    TrieNode() {
-        isEndOfWord = false;
-    }
-};
-
-class Trie {
-public:
-    TrieNode* root;
-
-    Trie() {
-        root = new TrieNode();
-    }
-
-    void insert(const string& word) {
-        TrieNode* current = root;
-
-        for (char c : word) {
-            if (current->children.find(c) == current->children.end()) {
-                current->children[c] = new TrieNode();
-            }
-            current = current->children[c];
-        }
-
-        current->isEndOfWord = true;
-    }
-
-    bool search(const string& word) {
-        TrieNode* current = root;
-
-        for (char c : word) {
-            if (current->children.find(c) == current->children.end()) {
-                return false;
-            }
-            current = current->children[c];
-        }
-
-        return current != nullptr && current->isEndOfWord;
-    }
-};
-
 int levenshteinDistance(const string& s1, const string& s2) {
     int m = s1.length();
     int n = s2.length();
 
-    // Create a matrix to store the distances
+
     vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
 
-    // Initialize the matrix
+
     for (int i = 0; i <= m; ++i) {
         for (int j = 0; j <= n; ++j) {
             if (i == 0) {
@@ -201,12 +169,12 @@ int levenshteinDistance(const string& s1, const string& s2) {
                 dp[i][j] = i;
             }
             else {
-                dp[i][j] = 0; // Placeholder for distance calculation
+                dp[i][j] = 0;
             }
         }
     }
 
-    // Fill the matrix
+
     for (int i = 1; i <= m; ++i) {
         for (int j = 1; j <= n; ++j) {
             int insertion = dp[i][j - 1] + 1;
@@ -216,19 +184,17 @@ int levenshteinDistance(const string& s1, const string& s2) {
         }
     }
 
-    // The bottom-right cell contains the Levenshtein distance
+
     return dp[m][n];
 }
 
 void dfs(TrieNode* node, const string& currentWord, const string& targetWord, int index, int distance, int maxDistance, set<pair<int, string>>& suggestions) {
-    // if (index == targetWord.length()) {
     if (distance > maxDistance)
         return;
     int editDistance = levenshteinDistance(currentWord, targetWord);
     if (node->isEndOfWord && distance <= maxDistance && editDistance < 4) {
         suggestions.insert(make_pair(editDistance, currentWord));
     }
-    // }
 
     if(targetWord[index] == targetWord[index+1] && index == 0)
         index++;
@@ -256,7 +222,7 @@ vector<string> readDictionaryFromFile(const string& filename) {
     ifstream file(filename);
     if (!file.is_open()) {
         cerr << "Error opening file: " << filename << endl;
-        return words; // Return empty vector if file couldn't be opened
+        return words; 
     }
 
     string word;
@@ -291,7 +257,7 @@ void readTextFile(string filename, vector<string>& words, vector<string> &words_
     full_text = "";
     if (!file.is_open()) {
         cerr << "Error opening file: " << filename << endl;
-        return; // Return empty vector if file couldn't be opened
+        return;
     }
     string actual_word;
     while (getline(file, actual_word, ' ')) {
@@ -304,7 +270,6 @@ void readTextFile(string filename, vector<string>& words, vector<string> &words_
 }
 
 
-//Função que mostra palavras erradas no texto
 vector<int> showErros(vector<string>& text, Trie*& dictionary) {
     vector<int> wrong_words;
     for (int i = 0; i < text.size(); i++) {
@@ -317,7 +282,6 @@ vector<int> showErros(vector<string>& text, Trie*& dictionary) {
     return wrong_words;
 }
 
-//returns all position of wrong words in the text
 void find_all_errors(vector<int> &wrong_words_in_array, const string &text, vector<string> &all_words_of_text, int index, set<int> &occurrences){
     if(index >= wrong_words_in_array.size())
         return;
@@ -348,7 +312,6 @@ void auto_correct(vector<set<pair<int, string>>>& suggestions, vector<string> &t
         if(!(suggestions[ct].empty())){
             auto firstElement = *(suggestions[ct].begin());
             text_arr[x] = isalpha(text_arr[x][text_arr[x].length() - 1]) ? (GREEN + firstElement.second + RESET) : text_arr[x].replace(0,text_arr[x].length()-1,(GREEN + firstElement.second + RESET));
-            // text.insert(x,firstElement.second);
         }else{
             words_not_found.push_back(text_arr[x]);
             text_arr[x] = isalpha(text_arr[x][text_arr[x].length() - 1]) ? (RED + text_arr[x] + RESET) : text_arr[x].replace(0,text_arr[x].length()-1,(RED + text_arr[x] + RESET));
@@ -385,12 +348,9 @@ void show_suggetions(vector<set<pair<int, string>>>& suggestions, set<int> &wron
         wrong_word = text.substr(x,end_word(text.substr(x)));
         suggestions.resize(suggestions.size() + 1);
         generateCorrections(wrong_word, dictionary, suggestions[suggestions.size()-1], maxDistance);
-        cout << "Correções para " << wrong_word << endl;
-        int ct = 0;
-        for(auto y: suggestions[suggestions.size()-1]){
-            if(y.first <= 3 && ct < 3)
-                cout << y.second << " " << y.first << endl;
-            ct++;
+    }
+}
+
 void manual_corrections(vector<string> &text_arr, vector<int> &wrong_pos_arr, string &corrected_text, string &white_corrected_text, Trie* dictionary){
     corrected_text = "";
     white_corrected_text = "";
@@ -416,7 +376,6 @@ void manual_corrections(vector<string> &text_arr, vector<int> &wrong_pos_arr, st
     }
 }
 
-// string random_corrections(string &text,vector<string> &wrong_words, set<pair<int, string>>& suggestions){
 
 void menu(){
     cout << "+-----------------------------------------------------+" << endl;
@@ -478,7 +437,7 @@ void suggestSaveFile(){
 
 int main() {
     Trie* dictionary = new Trie();
-    string dictionaryFile = DICTIONARY_NAME; // Replace with your ".dic" file path
+    string dictionaryFile = DICTIONARY_NAME;
     vector<string> mockDictionary = readDictionaryFromFile(dictionaryFile);
     vector<string> words_in_text;
     vector<string> words_in_text_w_accent;
@@ -488,11 +447,10 @@ int main() {
     string file_text;
     string palavra_certona, after_corrections = "";
     string teste = "flores";
-    int maxDistance = 3; // Maximum edit distance for suggestions
+    int maxDistance = 3;
 
     if (!mockDictionary.empty()) {
         cout << "Dictionary loaded successfully. Words read: " << mockDictionary.size() << endl;
-        // You can use 'dictionary' vector containing words read from the file here
     }
     else {
         cout << "Empty dictionary or error reading the file." << endl;
@@ -550,13 +508,15 @@ int main() {
                         }
                     }
                     find_all_errors(wrong_erros_pos_arr, file_text, words_in_text,0,wrong_words_text);
-                    // system("clear");
                     string colored_wrong_text = highlight_wrong_words(file_text,RED,wrong_words_text);
                     cout << endl << colored_wrong_text << endl;
                     cout << "\nyour text have: " << wrong_erros_pos_arr.size() << " misspelled words\n";
                     suggestCorrectionsMenu();
                     cin >> choice;
-                    if(choice == 0) break;
+                    if(choice == 0){
+                        after_corrections = "";
+                        break;
+                    } 
                     if (choice == 1){
                         show_suggetions(suggestedCorrections,wrong_words_text, (after_corrections == "" ? file_text : after_corrections) ,dictionary,maxDistance);
                         auto_correct(suggestedCorrections,words_in_text_w_accent,wrong_erros_pos_arr,palavra_certona, after_corrections, dictionary);
@@ -566,8 +526,6 @@ int main() {
                         wrong_words_text.clear();
                         words_in_text.clear();
                         split_string(after_corrections,words_in_text,words_in_text_w_accent,' ');
-                        // cout << endl << after_corrections << endl;
-                        // cout << "\nTap anything to continue: \n" << endl;
                     }else if(choice == 2){
                         show_suggetions(suggestedCorrections,wrong_words_text, (after_corrections == "" ? file_text : after_corrections) ,dictionary,maxDistance);
                         manual_corrections(words_in_text_w_accent,wrong_erros_pos_arr,palavra_certona, after_corrections, dictionary);
@@ -585,43 +543,6 @@ int main() {
         }
 
     }
-
-    // transform(inputWord.begin(), inputWord.end(), inputWord.begin(), [](char c) {
-    //     return std::tolower(c);
-    //     });
-
-
-    wrong_erros_pos_arr = showErros(words_in_text,dictionary);
-    find_all_errors(wrong_erros_pos_arr,file_text,words_in_text,0,wrong_words_text);
-    string colored_wrong_text = highlight_wrong_words(file_text,RED,wrong_words_text);
-
-    cout << colored_wrong_text << endl;
-
-    cout << wrong_erros_pos_arr.size() << " misspelled words!\n";
-
-    show_suggetions(suggestedCorrections,wrong_words_text,file_text,dictionary,maxDistance);
-    // auto_correct(suggestedCorrections,words_in_text_2,wrong_erros_pos_arr,palavra_certona);
-    cout << highlight_words(file_text,teste,BLUE);
-
-    // if (dictionary->search(inputFile)) {
-    //     cout << "The word is valid.\n";
-    // }
-    // else {
-
-
-
-        // generateCorrections(inputWord, dictionary, suggestedCorrections, maxDistance);
-        // quickSort(suggestedCorrections, 0, suggestedCorrections.size() - 1)
-        // if (!suggestedCorrections.empty()) {
-        //     cout << "Possible corrections:\n";
-        //     for (auto correction : suggestedCorrections) {
-        //         cout << correction.first << " " << correction.second << "\n";
-        //     }
-        // }
-        // else {
-        //     cout << "No suggestions found.\n";
-        // }
-    // }
-
+    
     return 0;
 }
