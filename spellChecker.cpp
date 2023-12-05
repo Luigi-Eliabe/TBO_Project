@@ -377,61 +377,99 @@ void manual_corrections(vector<string> &text_arr, vector<int> &wrong_pos_arr, st
 }
 
 
-void menu(){
-    cout << "+-----------------------------------------------------+" << endl;
-    cout << "| What do you want?                                   |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (0) Exit program!                                   |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (1) Find word's occurences in the text?             |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (2) Correct the text?                               |" << endl;
-    cout << "+-----------------------------------------------------+" << endl;
+void printHeader(const string& title, int& maxWidth) {
+    maxWidth = max(maxWidth, static_cast<int>(title.length()) + 4);
+    int width = max(static_cast<int>(title.length()) + 4, maxWidth);
 
+    if (title == "") {
+        cout << '+' << string(width, '-') << '+' << endl;
+        return;
+    }
+    cout << '+' << string(width, '-') << '+' << endl;
+    cout << '|' << setw(width) << left << title << setw(width) << '|' << endl;
+    cout << '+' << string(width, '-') << '+' << endl;
+}
+
+void printContent(const string& description, int maxWidth) {
+    int descWidth = max(static_cast<int>(description.length()) + 2, maxWidth);
+    cout << '|' << left << setw(descWidth) << description << '|' << std::endl;
+}
+
+void menu(){
+    int maxWidth = 0;
+
+    vector<string> content = { "(0) Exit program!","(1) Find word's occurences in the text?","(2) Correct the text?"};
+
+    for (const auto& content : content)
+        maxWidth = std::max(maxWidth, static_cast<int>(content.length()) + 4);
+    printHeader("What do you want?", maxWidth);
+
+    for (const auto& content : content)
+        printContent(content, maxWidth);
+
+    printHeader("", maxWidth);
 }
 
 void searchMenu(){
-    cout << "+-----------------------------------------------------+" << endl;
-    cout << "| Wanna search another word?                          |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (1) Yes.                                            |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (2) No.                                             |" << endl;
-    cout << "+-----------------------------------------------------+" << endl;
+    int maxWidth = 0;
 
+    vector<string> content = {"(1) Yes.", "(2) No."};
+
+    for (const auto& content : content) 
+        maxWidth = std::max(maxWidth, static_cast<int>(content.length()) + 4);
+    printHeader("Wanna search another word?", maxWidth);
+
+    for(auto x : content)
+        printContent(x,maxWidth);
+
+    printHeader("", maxWidth);
 }
 
 void addDictionaryMenu(){
-    cout << "+-----------------------------------------------------+" << endl;
-    cout << "| Add word to dictionary?                             |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (1) Yes.                                            |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (2) No.                                             |" << endl;
-    cout << "+-----------------------------------------------------+" << endl;
+
+    int maxWidth = 0;
+
+    vector<string> content = {"(1) Yes.", "(2) No."};
+
+    for (const auto& content : content) 
+        maxWidth = std::max(maxWidth, static_cast<int>(content.length()) + 4);
+    printHeader("Add word to dictionary?", maxWidth);
+
+    for(auto x : content)
+        printContent(x,maxWidth);
+
+    printHeader("", maxWidth);
 
 }
 
 void suggestCorrectionsMenu(){
-    cout << "+-----------------------------------------------------+" << endl;
-    cout << "| What do you wanna do?                               |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (1) Auto correct misspelled words?                  |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (2) Correct words manually?                         |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (0) Don't correct words.                            |" << endl;
-    cout << "+-----------------------------------------------------+" << endl;
+    int maxWidth = 0;
+
+    vector<string> content = { "(1) Auto correct misspelled words?","(2) Correct words manually?","(0) Don't correct words." };
+
+    for (const auto& content : content)
+        maxWidth = std::max(maxWidth, static_cast<int>(content.length()) + 4);
+    printHeader("What do you wanna do?", maxWidth);
+
+    for (const auto& content : content)
+        printContent(content, maxWidth);
+
+    printHeader("", maxWidth);
 
 }
 void suggestSaveFile(){
-    cout << "+-----------------------------------------------------+" << endl;
-    cout << "| Do you want to save the corrections in a text file? |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (1) Yes.                                            |" << endl;
-    cout << "|-----------------------------------------------------|" << endl;
-    cout << "| (2) No.                                             |" << endl;
-    cout << "+-----------------------------------------------------+" << endl;
+
+    int maxWidth = 0;
+    vector<string> content = {"(1) Yes.", "(2) No."};
+
+    for (const auto& content : content) 
+        maxWidth = std::max(maxWidth, static_cast<int>(content.length()) + 4);
+    printHeader("Do you want to save the corrections in a text file?", maxWidth);
+
+    for(auto x : content)
+        printContent(x,maxWidth);
+
+    printHeader("", maxWidth);
 }
 
 
